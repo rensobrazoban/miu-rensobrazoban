@@ -1,0 +1,244 @@
+CREATE TABLE cliente (
+    id_cliente INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(40) NOT NULL,
+    tipo_cliente VARCHAR(40),
+    fecha_alta DATE,
+    EIN VARCHAR(30),
+    sede_social VARCHAR(40)
+);
+
+CREATE TABLE almacen (
+    id_almacen INT PRIMARY KEY AUTO_INCREMENT,
+    nombre_almacen VARCHAR(40),
+    ciudad VARCHAR(40)
+);
+
+CREATE TABLE articulos (
+    codigo_articulo INT PRIMARY KEY AUTO_INCREMENT,
+    tipo VARCHAR(40),
+    subtipo VARCHAR(40),
+    color VARCHAR(40),
+    precio_unitario DECIMAL(10,2),
+    impuesto DECIMAL(5,2)
+);
+
+CREATE TABLE pedidos (
+    id_pedido INT PRIMARY KEY AUTO_INCREMENT,
+    id_cliente INT,
+    fecha_pedido DATE,
+    fecha_recepcion DATE,
+    fecha_entrega DATE,
+    estado_pedido VARCHAR(40),
+    estado_envio VARCHAR(40),
+    id_almacen INT,
+
+    FOREIGN KEY (id_cliente) REFERENCES cliente(id_cliente),
+    FOREIGN KEY (id_almacen) REFERENCES almacen(id_almacen)
+);
+
+CREATE TABLE factura (
+    id_factura INT PRIMARY KEY AUTO_INCREMENT,
+    id_pedido INT,
+    fecha_factura DATE,
+    total_sin_impuesto DECIMAL(10,2),
+
+    FOREIGN KEY (id_pedido) REFERENCES pedidos(id_pedido)
+);
+
+CREATE TABLE DetalleFactura (
+    id_detalle INT PRIMARY KEY AUTO_INCREMENT,
+    id_factura INT,
+    codigo_articulo INT,
+    cantidad INT,
+    precio_unitario DECIMAL(10,2),
+
+    FOREIGN KEY (id_factura) REFERENCES factura(id_factura),
+    FOREIGN KEY (codigo_articulo) REFERENCES articulos(codigo_articulo)
+);
+
+INSERT INTO cliente (name, tipo_cliente, fecha_alta, EIN, sede_social)
+VALUES
+('STEPS LLC', 'empresa', '2015-03-12', '98-2345678', 'Miami'),
+('María Rodríguez', 'empresa', '2010-11-25', '21-9876543', 'Orlando'),
+('Angela Nunez', 'particular', '2020-07-19', NULL, 'West Palm Beach'),
+('Ana López', 'empresa', '2008-01-09', '45-2233445', 'Jacksonville'),
+('Foot Shop LLC', 'empresa', '2017-09-04', '12-9988776', 'Fort Lauderdale'),
+('Gabriela Gómez', 'particular', '2021-05-17', NULL, 'Miami'),
+('Ricardo Ramírez', 'empresa', '2012-06-28', '33-5566778', 'Orlando'),
+('Paola Castillo', 'empresa', '2016-10-05', '55-8899001', 'Tampa'),
+('Andrés Herrera', 'particular', '2022-02-14', NULL, 'Jacksonville'),
+('Valentina Silva', 'empresa', '2014-04-30', '44-6677889', 'Fort Lauderdale');
+
+INSERT INTO almacen (nombre_almacen, ciudad)
+VALUES
+('Almacén Miami Central', 'Miami'),
+('Almacén Orlando Norte', 'Orlando'),
+('Almacén Tampa Este', 'Tampa'),
+('Almacén Jacksonville Sur', 'Jacksonville'),
+('Almacén Fort Lauderdale Oeste', 'Fort Lauderdale');
+
+INSERT INTO articulos (tipo, subtipo, color, precio_unitario, impuesto)
+VALUES
+('zapatilla', 'running', 'negro', 79.99, 0.18),
+('zapatilla', 'casual', 'gris', 65.49, 0.18),
+('bota', 'cuero', 'marrón', 120.00, 0.18),
+('sandalia', 'verano', 'verde', 25.99, 0.18),
+('zapatilla', 'deportiva', 'negro', 89.50, 0.18),
+('bota', 'montaña', 'gris', 140.00, 0.18),
+('mocasin', 'formal', 'negro', 55.00, 0.18),
+('tenis', 'urbano', 'verde', 49.90, 0.18),
+('sandalia', 'casual', 'gris', 29.00, 0.18),
+('bota', 'casual', 'negro', 130.00, 0.18);
+
+INSERT INTO pedidos (id_cliente, fecha_pedido, fecha_recepcion, fecha_entrega, estado_pedido, estado_envio, id_almacen)
+VALUES
+(1, '2019-01-12', '2019-01-14', '2019-01-18', 'confirmado', 'enviado', 1),
+(2, '2019-06-22', '2019-06-25', '2019-06-30', 'confirmado', 'enviado', 2),
+(3, '2020-03-10', NULL, NULL, 'cancelado', 'pendiente', 3),
+(4, '2018-12-01', '2018-12-03', '2018-12-08', 'confirmado', 'entregado', 4),
+(5, '2019-11-15', '2019-11-16', '2019-11-20', 'confirmado', 'enviado', 2),
+(6, '2021-02-21', '2021-02-23', '2021-02-27', 'confirmado', 'entregado', 1),
+(7, '2017-05-19', '2017-05-22', '2017-05-25', 'confirmado', 'entregado', 5),
+(8, '2019-09-03', '2019-09-06', '2019-09-10', 'confirmado', 'enviado', 3),
+(9, '2022-06-11', NULL, NULL, 'creado', 'pendiente', 1),
+(10, '2016-04-17', '2016-04-19', '2016-04-23', 'cancelado', 'pendiente', 4);
+
+INSERT INTO factura (id_pedido, fecha_factura, total_sin_impuesto)
+VALUES
+(1, '2019-01-19', 159.98),
+(2, '2019-07-01', 120.00),
+(4, '2018-12-10', 250.00),
+(5, '2019-11-21', 89.50),
+(6, '2021-02-28', 55.00),
+(7, '2017-05-26', 140.00),
+(8, '2019-09-11', 49.90);
+
+INSERT INTO DetalleFactura (id_factura, codigo_articulo, cantidad, precio_unitario)
+VALUES
+(1, 1, 2, 79.99),
+(2, 3, 1, 120.00),
+(3, 4, 2, 25.99),
+(3, 7, 1, 55.00),
+(4, 5, 1, 89.50),
+(5, 7, 1, 55.00),
+(6, 6, 1, 140.00),
+(7, 8, 1, 49.90),
+(7, 9, 1, 29.00);
+
+--Consulta 01
+SELECT name, fecha_alta
+FROM cliente
+WHERE tipo_cliente = 'empresa'
+ORDER BY fecha_alta;
+
+--Consulta 02
+SELECT EIN, sede_social
+FROM cliente
+WHERE tipo_cliente = 'empresa'
+  AND name LIKE '%LLC%'
+  AND fecha_alta BETWEEN '2005-01-01' AND '2017-12-31';
+
+--Conulta 03
+SELECT
+  codigo_articulo,
+  subtipo,
+  precio_unitario,
+  precio_unitario * (1 + impuesto) AS precio_con_impuesto
+FROM articulos
+WHERE color IN ('verde', 'gris', 'negro');
+
+--Conulta 04
+SELECT
+  AVG(precio_unitario) AS promedio,
+  MAX(precio_unitario) AS maximo,
+  MIN(precio_unitario) AS minimo
+FROM articulos
+WHERE tipo = 'zapatilla';
+
+--Conulta 05
+SELECT
+  c.id_cliente,
+  c.name,
+  COUNT(f.id_factura) AS total_facturas
+FROM cliente c
+LEFT JOIN pedidos p ON p.id_cliente = c.id_cliente
+LEFT JOIN factura f ON f.id_pedido = p.id_pedido
+GROUP BY c.id_cliente, c.name
+ORDER BY total_facturas DESC;
+
+--Conulta 06
+SELECT
+  f.id_factura,
+  p.fecha_pedido,
+  a.nombre_almacen,
+  c.tipo_cliente,
+  c.sede_social
+FROM pedidos p
+LEFT JOIN factura f ON f.id_pedido = p.id_pedido
+JOIN cliente c ON c.id_cliente = p.id_cliente
+JOIN almacen a ON a.id_almacen = p.id_almacen
+WHERE p.estado_pedido = 'cancelado';
+
+--Conulta 07
+SELECT
+  f.id_factura,
+  DATEDIFF(p.fecha_entrega, p.fecha_recepcion) AS dias,
+  a.ciudad,
+  c.sede_social
+FROM pedidos p
+JOIN factura f ON f.id_pedido = p.id_pedido
+JOIN cliente c ON c.id_cliente = p.id_cliente
+JOIN almacen a ON a.id_almacen = p.id_almacen
+WHERE p.estado_envio = 'enviado';
+
+--Conulta 08
+SELECT
+  art.subtipo,
+  SUM(df.cantidad) AS cantidad_total,
+  SUM(df.cantidad * df.precio_unitario) AS monto_total
+FROM factura f
+JOIN DetalleFactura df ON df.id_factura = f.id_factura
+JOIN articulos art ON art.codigo_articulo = df.codigo_articulo
+WHERE f.fecha_factura BETWEEN '2019-01-01' AND '2019-12-31'
+GROUP BY art.subtipo;
+
+--Conulta 09
+SELECT
+  art.subtipo,
+  SUM(df.cantidad) AS cantidad_total,
+  SUM(df.cantidad * df.precio_unitario) AS monto_total
+FROM factura f
+JOIN DetalleFactura df ON df.id_factura = f.id_factura
+JOIN articulos art ON art.codigo_articulo = df.codigo_articulo
+WHERE f.fecha_factura BETWEEN '2019-01-01' AND '2019-12-31'
+GROUP BY art.subtipo;
+
+--Conulta EXTRA 01 
+
+SELECT id_cliente, name, EIN
+FROM cliente
+WHERE EIN IS NULL OR EIN = '';
+
+--Consulta EXTRA 02 
+
+SELECT codigo_articulo, tipo, subtipo, precio_unitario
+FROM articulos
+ORDER BY precio_unitario DESC;
+
+--Consulta EXTRA 03
+
+SELECT estado_envio, COUNT(*) AS total_pedidos
+FROM pedidos
+GROUP BY estado_envio;
+
+--Consulta EXTRA 04
+
+SELECT
+    c.id_cliente,
+    c.name,
+    SUM(f.total_sin_impuesto) AS total_gastado
+FROM cliente c
+JOIN pedidos p ON p.id_cliente = c.id_cliente
+JOIN factura f ON f.id_pedido = p.id_pedido
+GROUP BY c.id_cliente, c.name
+ORDER BY total_gastado DESC;
